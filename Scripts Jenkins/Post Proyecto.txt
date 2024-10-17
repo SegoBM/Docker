@@ -1,0 +1,33 @@
+@echo off
+
+REM URL de tu API para la creación de un nuevo proyecto
+set API_URL=http://localhost:8080/proyectos
+
+REM Almacena el cuerpo del JSON en un archivo temporal en lugar de manejar comillas dobles dentro de una variable
+echo {"titulo":"Nuevo Proyecto","descripcion":"Descripción del nuevo proyecto","estudiante":16,"fecha_registro":"2023-10-01","estatus":"En progreso"} > data.json
+
+REM Llama a curl para realizar la petición POST
+curl -X POST "%API_URL%" ^
+     -H "Content-Type: application/json" ^
+     -d @data.json -o response.txt -w "%%{http_code}" > http_code.txt
+
+REM Lee el código de respuesta desde el archivo temporal http_code.txt
+set /p RESPONSE=<http_code.txt
+
+REM Muestra la respuesta completa
+echo Respuesta completa:
+type response.txt
+
+REM Verifica si la respuesta es 201 (creado)
+if "%RESPONSE%"=="201" (
+  echo Prueba exitosa: La API responde con estado 201
+  exit /b 0
+) else (
+  echo Prueba fallida: La API respondió con estado %RESPONSE%
+  exit /b 1
+)
+
+REM Limpieza de archivos temporales
+del data.json
+del response.txt
+del http_code.txt

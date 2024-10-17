@@ -1,0 +1,27 @@
+@echo off
+
+REM URL del proyecto a eliminar
+set API_URL=http://localhost:8080/proyectos/24
+
+REM Llama a curl para realizar la petición DELETE
+curl -X DELETE "%API_URL%" -o response.txt -w "%%{http_code}" > http_code.txt
+
+REM Lee el código de respuesta desde el archivo temporal http_code.txt
+set /p RESPONSE=<http_code.txt
+
+REM Muestra la respuesta completa
+echo Respuesta completa:
+type response.txt
+
+REM Verifica si la respuesta es 204 (eliminado exitosamente)
+if "%RESPONSE%"=="204" (
+  echo Prueba exitosa: La API responde con estado 204 (Eliminado correctamente)
+  exit /b 0
+) else (
+  echo Prueba fallida: La API respondió con estado %RESPONSE%
+  exit /b 1
+)
+
+REM Limpieza de archivos temporales
+del response.txt
+del http_code.txt

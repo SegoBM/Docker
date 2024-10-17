@@ -1,0 +1,17 @@
+@echo off
+
+REM URL de tu API con el ID del usuario (cambia el ID según sea necesario)
+set API_URL=http://localhost:8080/proyectos/1
+
+REM Realiza una petición GET y guarda el código de estado en response.txt
+curl -s -o NUL -w "%%{http_code}" %API_URL% > response.txt
+set /p RESPONSE=<response.txt
+
+REM Verifica si la respuesta es 200
+if %RESPONSE%==200 (
+  echo Prueba exitosa: La API responde con estado 200
+  exit /b 0
+) else (
+  echo Prueba fallida: La API respondió con estado %RESPONSE%
+  exit /b 1
+)

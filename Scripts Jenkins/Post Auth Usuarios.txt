@@ -1,0 +1,33 @@
+@echo off
+
+REM URL de la API para la autenticación
+set API_URL=http://localhost:8080/auth
+
+REM Almacena el cuerpo del JSON en un archivo temporal
+echo {"usuario":"a","contrasena":"a"} > data.json
+
+REM Llama a curl para realizar la petición POST
+curl -X POST "%API_URL%" ^
+     -H "Content-Type: application/json" ^
+     -d @data.json -o response.txt -w "%%{http_code}" > http_code.txt
+
+REM Lee el código de respuesta desde el archivo temporal http_code.txt
+set /p RESPONSE=<http_code.txt
+
+REM Muestra la respuesta completa
+echo Respuesta completa:
+type response.txt
+
+REM Verifica si la respuesta es 200 (autenticación exitosa)
+if "%RESPONSE%"=="200" (
+  echo Prueba exitosa: Autenticación exitosa con estado 200
+  exit /b 0
+) else (
+  echo Prueba fallida: La API respondió con estado %RESPONSE%
+  exit /b 1
+)
+
+REM Limpieza de archivos temporales
+del data.json
+del response.txt
+del http_code.txt

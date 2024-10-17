@@ -1,0 +1,33 @@
+@echo off
+
+REM URL de tu API para la actualización de un proyecto (ID 24)
+set API_URL=http://localhost:8080/proyectos/24
+
+REM Almacena el cuerpo del JSON en un archivo temporal (data.json)
+echo {"titulo":"Proyecto 2222","descripcion":"Descripción actualizada del proyecto","estudiante":16,"fecha_registro":"2023-10-01","estatus":"Completado"} > data.json
+
+REM Llama a curl para realizar la petición PUT
+curl -X PUT "%API_URL%" ^
+     -H "Content-Type: application/json" ^
+     -d @data.json -o response.txt -w "%%{http_code}" > http_code.txt
+
+REM Lee el código de respuesta desde el archivo temporal http_code.txt
+set /p RESPONSE=<http_code.txt
+
+REM Muestra la respuesta completa
+echo Respuesta completa:
+type response.txt
+
+REM Verifica si la respuesta es 200 (actualizado correctamente)
+if "%RESPONSE%"=="200" (
+  echo Prueba exitosa: La API responde con estado 200
+  exit /b 0
+) else (
+  echo Prueba fallida: La API respondió con estado %RESPONSE%
+  exit /b 1
+)
+
+REM Limpieza de archivos temporales
+del data.json
+del response.txt
+del http_code.txt
